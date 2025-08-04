@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String @id @default(cuid())
+  firstName   String
+  householdId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  household       Household?       @relation(fields: [householdId], references: [id])
+  assignedChores  Chore[]         @relation("AssignedChores")
+  completedChores CompletedChore[]
+  settledDebts    Settlement[]
+
+  @@map("users")
+}
+
+model Household {
+  id        String   @id @default(cuid())
+  name      String
+  inviteCode String  @unique @default(cuid())
+  baseRate  Float    @default(15.00) // Default minimum wage in USD
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members         User[]
+  chores          Chore[]
+  completedChores CompletedChore[]
+  settlements     Settlement[]
+
+  @@map("households")
+}
+
+enum SkillLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+model Chore {
+  id          String     @id @default(cuid())
+  name        String
+  skillLevel  SkillLevel @default(BASIC)
+  assignedTo  String?
+  householdId String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  household       Household        @relation(fields: [householdId], references: [id])
+  assignedUser    User?            @relation("AssignedChores", fields: [assignedTo], references: [id])
+  completedChores CompletedChore[]
+
+  @@map("chores")
+}
+
+model CompletedChore {
+  id          String   @id @default(cuid())
+  choreId     String
+  completedBy String
+  timeSpent   Float    // Time in hours
+  value       Float    // Calculated monetary value
+  completedAt DateTime @default(now())
+  householdId String
+
+  chore       Chore     @relation(fields: [choreId], references: [id])
+  completedByUser User  @relation(fields: [completedBy], references: [id])
+  household   Household @relation(fields: [householdId], references: [id])
+
+  @@map("completed_chores")
+}
+
+model Settlement {
+  id          String   @id @default(cuid())
+  householdId String
+  amount      Float
+  settledBy   String   // User who confirmed payment received
+  fromUser    String   // User who owed money
+  toUser      String   // User who was owed money
+  note        String?
+  settledAt   DateTime @default(now())
+
+  household Household @relation(fields: [householdId], references: [id])
+  settledByUser User  @relation(fields: [settledBy], references: [id])
+
+  @@map("settlements")
+}
