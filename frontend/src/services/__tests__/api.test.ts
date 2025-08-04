@@ -1,22 +1,31 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-// Create a mock axios instance
-const mockAxiosInstance = {
-  post: vi.fn(),
-  get: vi.fn(),
-  patch: vi.fn(),
-  delete: vi.fn(),
-}
-
-// Mock axios before importing the API service
-vi.mock('axios', () => ({
-  default: {
-    create: vi.fn(() => mockAxiosInstance)
+// Mock axios before any imports
+vi.mock('axios', () => {
+  const mockPost = vi.fn()
+  const mockGet = vi.fn()
+  const mockPatch = vi.fn()
+  const mockDelete = vi.fn()
+  
+  return {
+    default: {
+      create: vi.fn(() => ({
+        post: mockPost,
+        get: mockGet,
+        patch: mockPatch,
+        delete: mockDelete
+      }))
+    }
   }
-}))
+})
 
 // Import after mocking
+import axios from 'axios'
 import { userApi, householdApi, choreApi, dashboardApi, settlementApi } from '@/services/api'
+
+// Get the mock functions from the axios instance
+const mockAxiosInstance = (axios.create as any)()
+const { post: mockPost, get: mockGet, patch: mockPatch, delete: mockDelete } = mockAxiosInstance
 
 describe('API Services', () => {
   beforeEach(() => {
@@ -31,11 +40,11 @@ describe('API Services', () => {
           data: { user: { id: 'user1', firstName: 'Alice' } }
         }
       }
-      mockAxiosInstance.post.mockResolvedValue(mockResponse)
+      mockPost.mockResolvedValue(mockResponse)
 
       const result = await userApi.create('Alice')
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/users', { firstName: 'Alice' })
+      expect(mockPost).toHaveBeenCalledWith('/users', { firstName: 'Alice' })
       expect(result).toEqual(mockResponse)
     })
 
@@ -46,11 +55,11 @@ describe('API Services', () => {
           data: { user: { id: 'user1', firstName: 'Alice' } }
         }
       }
-      mockAxiosInstance.get.mockResolvedValue(mockResponse)
+      mockGet.mockResolvedValue(mockResponse)
 
       const result = await userApi.get('user1')
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/users/user1')
+      expect(mockGet).toHaveBeenCalledWith('/users/user1')
       expect(result).toEqual(mockResponse)
     })
   })
@@ -63,11 +72,11 @@ describe('API Services', () => {
           data: { household: { id: 'household1', name: 'Test Household' } }
         }
       }
-      mockAxiosInstance.post.mockResolvedValue(mockResponse)
+      mockPost.mockResolvedValue(mockResponse)
 
       const result = await householdApi.create('user1')
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/households', { userId: 'user1' })
+      expect(mockPost).toHaveBeenCalledWith('/households', { userId: 'user1' })
       expect(result).toEqual(mockResponse)
     })
 
@@ -78,11 +87,11 @@ describe('API Services', () => {
           data: { household: { id: 'household1', name: 'Test Household' } }
         }
       }
-      mockAxiosInstance.post.mockResolvedValue(mockResponse)
+      mockPost.mockResolvedValue(mockResponse)
 
       const result = await householdApi.join('user1', 'ABC123')
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/households/join', { userId: 'user1', inviteCode: 'ABC123' })
+      expect(mockPost).toHaveBeenCalledWith('/households/join', { userId: 'user1', inviteCode: 'ABC123' })
       expect(result).toEqual(mockResponse)
     })
 
@@ -93,11 +102,11 @@ describe('API Services', () => {
           data: { household: { id: 'household1', baseRate: 20.0 } }
         }
       }
-      mockAxiosInstance.patch.mockResolvedValue(mockResponse)
+      mockPatch.mockResolvedValue(mockResponse)
 
       const result = await householdApi.updateSettings('household1', 20.0)
 
-      expect(mockAxiosInstance.patch).toHaveBeenCalledWith('/households/household1/settings', { baseRate: 20.0 })
+      expect(mockPatch).toHaveBeenCalledWith('/households/household1/settings', { baseRate: 20.0 })
       expect(result).toEqual(mockResponse)
     })
   })
@@ -110,11 +119,11 @@ describe('API Services', () => {
           data: { chore: { id: 'chore1', name: 'Clean Kitchen' } }
         }
       }
-      mockAxiosInstance.post.mockResolvedValue(mockResponse)
+      mockPost.mockResolvedValue(mockResponse)
 
       const result = await choreApi.create('household1', 'Clean Kitchen', 'BASIC', 'user1')
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/chores', {
+      expect(mockPost).toHaveBeenCalledWith('/chores', {
         householdId: 'household1',
         name: 'Clean Kitchen',
         skillLevel: 'BASIC',
@@ -130,11 +139,11 @@ describe('API Services', () => {
           data: { chores: [{ id: 'chore1', name: 'Clean Kitchen' }] }
         }
       }
-      mockAxiosInstance.get.mockResolvedValue(mockResponse)
+      mockGet.mockResolvedValue(mockResponse)
 
       const result = await choreApi.getAll('household1')
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/chores', {
+      expect(mockGet).toHaveBeenCalledWith('/chores', {
         params: { householdId: 'household1' }
       })
       expect(result).toEqual(mockResponse)
@@ -147,11 +156,11 @@ describe('API Services', () => {
           data: { completedChore: { id: 'completed1', value: 30.0 } }
         }
       }
-      mockAxiosInstance.post.mockResolvedValue(mockResponse)
+      mockPost.mockResolvedValue(mockResponse)
 
       const result = await choreApi.complete('chore1', 'user1', 2.0)
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/chores/chore1/complete', {
+      expect(mockPost).toHaveBeenCalledWith('/chores/chore1/complete', {
         completedBy: 'user1',
         timeSpent: 2.0
       })
@@ -170,11 +179,11 @@ describe('API Services', () => {
           }
         }
       }
-      mockAxiosInstance.get.mockResolvedValue(mockResponse)
+      mockGet.mockResolvedValue(mockResponse)
 
       const result = await dashboardApi.get('household1')
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/dashboard/household1')
+      expect(mockGet).toHaveBeenCalledWith('/dashboard/household1')
       expect(result).toEqual(mockResponse)
     })
 
@@ -185,11 +194,11 @@ describe('API Services', () => {
           data: { totalHouseholdValue: 250 }
         }
       }
-      mockAxiosInstance.get.mockResolvedValue(mockResponse)
+      mockGet.mockResolvedValue(mockResponse)
 
       const result = await dashboardApi.getAnalysis('household1', '2023-01-01', '2023-01-31')
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/dashboard/household1/analysis', {
+      expect(mockGet).toHaveBeenCalledWith('/dashboard/household1/analysis', {
         params: { startDate: '2023-01-01', endDate: '2023-01-31' }
       })
       expect(result).toEqual(mockResponse)
@@ -204,11 +213,11 @@ describe('API Services', () => {
           data: { settlement: { id: 'settlement1', amount: 25.0 } }
         }
       }
-      mockAxiosInstance.post.mockResolvedValue(mockResponse)
+      mockPost.mockResolvedValue(mockResponse)
 
       const result = await settlementApi.create('household1', 'user1', 25.0, 'user2', 'user1', 'Paid via Venmo')
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/settlements', {
+      expect(mockPost).toHaveBeenCalledWith('/settlements', {
         householdId: 'household1',
         settledBy: 'user1',
         amount: 25.0,
@@ -226,11 +235,11 @@ describe('API Services', () => {
           data: { settlements: [{ id: 'settlement1', amount: 25.0 }] }
         }
       }
-      mockAxiosInstance.get.mockResolvedValue(mockResponse)
+      mockGet.mockResolvedValue(mockResponse)
 
       const result = await settlementApi.getAll('household1', '2023-01-01', '2023-01-31')
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/settlements', {
+      expect(mockGet).toHaveBeenCalledWith('/settlements', {
         params: { householdId: 'household1', startDate: '2023-01-01', endDate: '2023-01-31' }
       })
       expect(result).toEqual(mockResponse)

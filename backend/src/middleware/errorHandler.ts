@@ -21,14 +21,16 @@ export const errorHandler = (
     });
   }
 
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    if (error.code === 'P2002') {
+  // Handle Prisma errors
+  if (error.name === 'PrismaClientKnownRequestError') {
+    const prismaError = error as any;
+    if (prismaError.code === 'P2002') {
       return res.status(409).json({
         error: 'Unique constraint violation',
-        field: error.meta?.target,
+        field: prismaError.meta?.target,
       });
     }
-    if (error.code === 'P2025') {
+    if (prismaError.code === 'P2025') {
       return res.status(404).json({
         error: 'Record not found',
       });

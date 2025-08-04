@@ -38,20 +38,14 @@ model Household {
   @@map("households")
 }
 
-enum SkillLevel {
-  BASIC
-  INTERMEDIATE
-  ADVANCED
-}
-
 model Chore {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  skillLevel  SkillLevel @default(BASIC)
+  skillLevel  String   @default("BASIC")
   assignedTo  String?
   householdId String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   household       Household        @relation(fields: [householdId], references: [id])
   assignedUser    User?            @relation("AssignedChores", fields: [assignedTo], references: [id])

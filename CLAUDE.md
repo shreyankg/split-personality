@@ -151,3 +151,21 @@ The application uses Tailwind CSS with mobile-first responsive design. Key patte
 
 - When testing, run tests with full debug mode and capture the logs to avoid having to re-run tests again and again between code changes. Test reruns should be only required when the code changes.
 - When writing or fixing tests, don't create any unnecessary test dependencies.
+
+### Test Debugging Strategies
+
+**Backend Test Issues:**
+- **TypeScript compilation errors**: Often caused by missing imports or incorrect types. Define enums locally in test files if importing from Prisma client causes issues.
+- **Prisma error handling**: Use `error.name === 'PrismaClientKnownRequestError'` instead of `instanceof` for better TypeScript compatibility.
+- **Jest ESM compatibility**: Update `transformIgnorePatterns` in `jest.config.js` to handle ES modules.
+
+**Frontend Test Issues:**
+- **Axios mocking circular dependencies**: Mock axios at the factory level and return consistent mock functions to avoid circular reference issues.
+- **Vue component testing**: Mock API services rather than store methods for more realistic testing. Use `vi.mocked()` for proper TypeScript support.
+- **Form submission timing**: Use `vi.waitFor()` or call component methods directly rather than relying on DOM event simulation for async operations.
+- **Router mocking**: Always provide a route for the path being tested to avoid "No match found" warnings.
+
+**Common Patterns:**
+- **API Service Tests**: Mock axios.create() to return consistent mock functions, not individual axios instances.
+- **Component Tests**: Mock dependencies at the service level, not the store level, for more realistic test scenarios.
+- **Store Tests**: Use `setActivePinia(createPinia())` before each test and mock localStorage operations.

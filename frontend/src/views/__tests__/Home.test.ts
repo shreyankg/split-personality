@@ -16,25 +16,32 @@ vi.mock('vue-router', async () => {
   }
 })
 
-// Mock the user store
-const mockCreateUser = vi.fn()
-const mockUserStore = {
-  isLoading: false,
-  createUser: mockCreateUser,
-}
-
-vi.mock('@/stores/user', () => ({
-  useUserStore: () => mockUserStore
+// Mock the API instead of the store
+vi.mock('@/services/api', () => ({
+  userApi: {
+    create: vi.fn(),
+    get: vi.fn(),
+  },
+  householdApi: {
+    create: vi.fn(),
+    join: vi.fn(),
+    get: vi.fn(),
+    updateSettings: vi.fn(),
+  }
 }))
+
+import { userApi } from '@/services/api'
 
 describe('Home.vue', () => {
   let wrapper: any
+  let router: any
+  let pinia: any
 
   beforeEach(() => {
-    const pinia = createPinia()
-    const router = createRouter({
+    pinia = createPinia()
+    router = createRouter({
       history: createWebHistory(),
-      routes: []
+      routes: [{ path: '/', component: Home }]
     })
 
     wrapper = mount(Home, {
@@ -44,6 +51,16 @@ describe('Home.vue', () => {
     })
 
     vi.clearAllMocks()
+    
+    // Mock localStorage
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      },
+      writable: true
+    })
   })
 
   it('renders welcome message', () => {
@@ -71,14 +88,14 @@ describe('Home.vue', () => {
   })
 
   it('shows loading state when creating user', async () => {
-    mockUserStore.isLoading = true
+    // Create a mock that takes a while to resolve
+    vi.mocked(userApi.create).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
     
-    const wrapper = mount(Home, {
-      global: {
-        plugins: [router, pinia]
-      }
-    })
+    const input = wrapper.find('input[type="text"]')
+    await input.setValue('Alice')
 
+    // Start the form submission
+    wrapper.vm.handleSubmit()
     await wrapper.vm.$nextTick()
 
     const button = wrapper.find('button[type="submit"]')
@@ -87,24 +104,21 @@ describe('Home.vue', () => {
   })
 
   it('calls createUser and navigates on form submit', async () => {
-    mockCreateUser.mockResolvedValue({ id: 'user1', firstName: 'Alice' })
+    const mockUser = { id: 'user1', firstName: 'Alice', householdId: null, createdAt: '2023-01-01', updatedAt: '2023-01-01' }
+    vi.mocked(userApi.create).mockResolvedValue({ data: { data: { user: mockUser } } } as any)
 
     const input = wrapper.find('input[type="text"]')
     await input.setValue('Alice')
 
-    // Trigger the submit event directly on the form element
-    await wrapper.find('form').trigger('submit')
+    // Call the handleSubmit method directly
+    await wrapper.vm.handleSubmit()
 
-    // Wait for Vue's reactivity and promises to resolve
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 0))
-
-    expect(mockCreateUser).toHaveBeenCalledWith('Alice')
+    expect(userApi.create).toHaveBeenCalledWith('Alice')
     expect(mockPush).toHaveBeenCalledWith('/onboarding')
   })
 
   it('handles createUser error gracefully', async () => {
-    mockCreateUser.mockRejectedValue(new Error('Creation failed'))
+    vi.mocked(userApi.create).mockRejectedValue(new Error('Creation failed'))
     
     // Mock console.error to avoid test output noise
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -112,11 +126,10 @@ describe('Home.vue', () => {
     const input = wrapper.find('input[type="text"]')
     await input.setValue('Alice')
 
-    await wrapper.find('form').trigger('submit')
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 0))
+    // Call the handleSubmit method directly
+    await wrapper.vm.handleSubmit()
 
-    expect(mockCreateUser).toHaveBeenCalledWith('Alice')
+    expect(userApi.create).toHaveBeenCalledWith('Alice')
     expect(mockPush).not.toHaveBeenCalled()
     expect(consoleSpy).toHaveBeenCalledWith('Failed to create user:', expect.any(Error))
 
@@ -124,16 +137,16 @@ describe('Home.vue', () => {
   })
 
   it('trims whitespace from input', async () => {
-    mockCreateUser.mockResolvedValue({ id: 'user1', firstName: 'Alice' })
+    const mockUser = { id: 'user1', firstName: 'Alice', householdId: null, createdAt: '2023-01-01', updatedAt: '2023-01-01' }
+    vi.mocked(userApi.create).mockResolvedValue({ data: { data: { user: mockUser } } } as any)
 
     const input = wrapper.find('input[type="text"]')
     await input.setValue('  Alice  ')
 
-    await wrapper.find('form').trigger('submit')
-    await wrapper.vm.$nextTick()
-    await new Promise(resolve => setTimeout(resolve, 0))
-
-    expect(mockCreateUser).toHaveBeenCalledWith('Alice')
+    // Call the handleSubmit method directly
+    await wrapper.vm.handleSubmit()
+    
+    expect(userApi.create).toHaveBeenCalledWith('Alice')
   })
 
   it('does not submit when input is only whitespace', async () => {
@@ -146,6 +159,6 @@ describe('Home.vue', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
 
-    expect(mockCreateUser).not.toHaveBeenCalled()
+    expect(userApi.create).not.toHaveBeenCalled()
   })
 })
