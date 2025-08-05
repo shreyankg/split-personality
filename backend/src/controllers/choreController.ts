@@ -152,6 +152,54 @@ export const completeChore = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const deleteChore = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { householdId } = req.query;
+
+    if (!householdId) {
+      const error: AppError = new Error('Household ID is required');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const chore = await prisma.chore.findUnique({
+      where: { id },
+      include: { completedChores: true },
+    });
+
+    if (!chore) {
+      const error: AppError = new Error('Chore not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (chore.householdId !== householdId) {
+      const error: AppError = new Error('Chore not found in household');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Check if chore has been completed (has completion history)
+    if (chore.completedChores.length > 0) {
+      const error: AppError = new Error('Cannot delete chore with completion history');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    await prisma.chore.delete({
+      where: { id },
+    });
+
+    res.json({
+      success: true,
+      data: { message: 'Chore deleted successfully' },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getCompletedChores = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { householdId } = req.query;
