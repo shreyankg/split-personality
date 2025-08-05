@@ -1,7 +1,7 @@
 {
-  "name": "chore-equity-backend",
+  "name": "split-personality-backend",
   "version": "1.0.0",
-  "description": "Backend API for Chore Equity App",
+  "description": "Backend API for Split Personality",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -17,9 +17,9 @@
     "api",
     "express",
     "chore",
-    "equity"
+    "split-personality"
   ],
-  "author": "Chore Equity Team",
+  "author": "Split Personality Team",
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^5.15.0",

@@ -1,4 +1,4 @@
-# Product Requirements Document: Chore Equity App
+# Product Requirements Document: Split Personality
 
 | **Version** | 1.0 |
 |-------------|-----|

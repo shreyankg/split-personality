@@ -1,7 +1,7 @@
 {
-  "name": "chore-equity-app",
+  "name": "split-personality",
   "version": "1.0.0",
-  "description": "A household chore management app that assigns monetary values to chores for equitable distribution",
+  "description": "Split Personality - A household chore management app that assigns monetary values to chores for equitable distribution",
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
@@ -15,8 +15,8 @@
     "test:frontend": "cd frontend && npm test",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
-  "keywords": ["chore", "equity", "household", "management"],
-  "author": "Chore Equity Team",
+  "keywords": ["split-personality", "chore", "equity", "household", "management"],
+  "author": "Split Personality Team",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"

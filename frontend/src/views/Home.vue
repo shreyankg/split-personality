@@ -2,7 +2,7 @@
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100">
     <div class="max-w-md w-full space-y-8 p-8">
       <div class="text-center">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Chore Equity</h1>
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Split Personality</h1>
         <p class="text-lg text-gray-600 mb-8">
           Fair and transparent household chore management
         </p>

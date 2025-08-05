@@ -1,4 +1,4 @@
-# Developer Documentation
+# Split Personality - Developer Documentation
 
 ## Current Status
 
@@ -37,7 +37,7 @@
 
 ## Architecture Overview
 
-The Chore Equity App follows a modern full-stack architecture with clear separation of concerns:
+Split Personality follows a modern full-stack architecture with clear separation of concerns:
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -701,11 +701,11 @@ npm run build -- --analyze
 **Backend Logs:**
 ```bash
 # Follow application logs
-tail -f /var/log/chore-equity/app.log
+tail -f /var/log/split-personality/app.log
 
 # Check process status
 pm2 status
-pm2 logs chore-equity
+pm2 logs split-personality
 ```
 
 **Database Debugging:**

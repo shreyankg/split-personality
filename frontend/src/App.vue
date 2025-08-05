@@ -5,7 +5,7 @@
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center space-x-8">
             <router-link to="/dashboard" class="text-xl font-bold text-primary-600">
-              Chore Equity
+              Split Personality
             </router-link>
             <div class="hidden md:flex space-x-4">
               <router-link

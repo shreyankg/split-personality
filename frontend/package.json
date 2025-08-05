@@ -1,7 +1,7 @@
 {
-  "name": "chore-equity-frontend",
+  "name": "split-personality-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Chore Equity App",
+  "description": "Frontend for Split Personality",
   "type": "module",
   "scripts": {
     "dev": "vite",

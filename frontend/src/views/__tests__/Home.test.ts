@@ -64,7 +64,7 @@ describe('Home.vue', () => {
   })
 
   it('renders welcome message', () => {
-    expect(wrapper.text()).toContain('Chore Equity')
+    expect(wrapper.text()).toContain('Split Personality')
     expect(wrapper.text()).toContain('Fair and transparent household chore management')
   })
 

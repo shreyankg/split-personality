@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Application Overview
 
-This is the **Chore Equity App**, a full-stack web application that helps cohabiting partners manage household responsibilities equitably by assigning monetary values to chores. The core business logic revolves around the **chore valuation formula**: `Chore Value = (Base Rate × Time) + Skill Bonus + Rarity Bonus`.
+This is **Split Personality**, a full-stack web application that helps cohabiting partners manage household responsibilities equitably by assigning monetary values to chores. The core business logic revolves around the **chore valuation formula**: `Chore Value = (Base Rate × Time) + Skill Bonus + Rarity Bonus`.
 
 ## Architecture
 

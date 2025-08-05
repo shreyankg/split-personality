@@ -1,10 +1,10 @@
-# Chore Equity App
+# Split Personality
 
 A modern web application that helps cohabiting partners manage and share household responsibilities equitably by assigning monetary values to chores.
 
-## 🏠 What is Chore Equity?
+## 🏠 What is Split Personality?
 
-Chore Equity transforms household labor management by treating chores as valuable contributions with real monetary worth. Instead of arguments about fairness, partners get a clear, quantifiable measure of each person's contribution to the household.
+Split Personality transforms household labor management by treating chores as valuable contributions with real monetary worth. Instead of arguments about fairness, partners get a clear, quantifiable measure of each person's contribution to the household.
 
 ### Key Features
 

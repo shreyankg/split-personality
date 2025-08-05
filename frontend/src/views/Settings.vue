@@ -157,11 +157,11 @@
 
       <!-- About -->
       <div class="card">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">About Chore Equity</h2>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">About Split Personality</h2>
         
         <div class="text-sm text-gray-600 space-y-2">
           <p>
-            Chore Equity helps couples fairly distribute household work by assigning monetary values to chores.
+            Split Personality helps couples fairly distribute household work by assigning monetary values to chores.
           </p>
           
           <div class="bg-gray-50 rounded-lg p-3 mt-4">
