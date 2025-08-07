@@ -1,54 +1,55 @@
-const express = require('express');
-const app = express();
+const http = require('http');
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
-console.log('Starting simple server...');
+console.log('🚀 Starting minimal HTTP server...');
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('PORT:', PORT);
 
-// Middleware for all requests
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
+const server = http.createServer((req, res) => {
+  const timestamp = new Date().toISOString();
+  console.log(`${timestamp} - ${req.method} ${req.url}`);
+
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.url === '/health' || req.url === '/healthz') {
+    console.log('✅ Health check successful');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'healthy', timestamp }));
+    return;
+  }
+
+  if (req.url === '/') {
+    console.log('✅ Root request successful');
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('<h1>🎉 Split Personality is running!</h1><p>Health: <a href="/health">/health</a></p>');
+    return;
+  }
+
+  // 404 for other routes
+  res.writeHead(404, { 'Content-Type': 'text/plain' });
+  res.end('Not found');
 });
 
-// Health checks - multiple endpoints
-app.get('/health', (req, res) => {
-  console.log('Health check requested');
-  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
-});
-
-app.get('/healthz', (req, res) => {
-  console.log('Healthz check requested');
-  res.status(200).send('OK');
-});
-
-app.get('/', (req, res) => {
-  console.log('Root path requested');
-  res.send('<h1>Split Personality is running!</h1><p>Health: <a href="/health">/health</a></p>');
-});
-
-// Catch all errors
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).send('Server Error');
-});
-
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Simple server running on port ${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ HTTP server running on port ${PORT}`);
   console.log(`✅ Server bound to: 0.0.0.0:${PORT}`);
-  console.log(`✅ Health check: http://0.0.0.0:${PORT}/health`);
-  console.log(`✅ Ready to receive requests!`);
+  console.log(`✅ Health endpoint: http://0.0.0.0:${PORT}/health`);
+  console.log(`✅ Ready for Railway health checks!`);
 });
 
 server.on('error', (err) => {
   console.error('❌ Server failed to start:', err);
+  process.exit(1);
 });
 
-// Graceful shutdown
+// Keep the server alive
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully');
+  console.log('Received SIGTERM, shutting down...');
   server.close(() => {
-    console.log('Process terminated');
+    console.log('Server closed');
+    process.exit(0);
   });
 });
