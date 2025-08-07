@@ -13,7 +13,7 @@ import { dashboardRoutes } from './routes/dashboardRoutes';
 import { settlementRoutes } from './routes/settlementRoutes';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Ensure data directory exists for SQLite database in production
@@ -59,6 +59,6 @@ if (isProduction) {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
