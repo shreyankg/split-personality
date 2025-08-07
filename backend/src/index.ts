@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 import { errorHandler } from './middleware/errorHandler';
 import { userRoutes } from './routes/userRoutes';
 import { householdRoutes } from './routes/householdRoutes';
@@ -11,6 +13,7 @@ import { settlementRoutes } from './routes/settlementRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isProduction = process.env.NODE_ENV === 'production';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -23,6 +26,7 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// API routes
 app.use('/api/users', userRoutes);
 app.use('/api/households', householdRoutes);
 app.use('/api/chores', choreRoutes);
@@ -32,6 +36,17 @@ app.use('/api/settlements', settlementRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Serve static files in production
+if (isProduction) {
+  const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+  app.use(express.static(frontendDistPath));
+  
+  // Handle client-side routing - serve index.html for non-API routes
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
 
 app.use(errorHandler);
 

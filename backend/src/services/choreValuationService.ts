@@ -77,12 +77,13 @@ export class ChoreValuationService {
     }
 
     const baseRate = chore.household.baseRate;
-    const skillBonus = this.getSkillBonus(chore.skillLevel);
+    const skillLevel = chore.skillLevel as SkillLevel;
+    const skillBonus = this.getSkillBonus(skillLevel);
     const rarityBonus = await this.getRarityBonus(
       choreId,
       completedBy,
       chore.householdId,
-      chore.skillLevel
+      skillLevel
     );
 
     const baseValue = baseRate * timeSpent;

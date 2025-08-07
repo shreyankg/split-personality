@@ -128,6 +128,8 @@ backend/.env.production.local
 backend/prisma/*.db
 backend/prisma/*.db-journal
 backend/prisma/migrations/
+# Production database (deployed on Railway with persistent volume)
+backend/prisma/production.db*
 
 # Frontend specific
 frontend/dist/

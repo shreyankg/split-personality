@@ -1,6 +1,3 @@
-import { ChoreValuationService } from '../choreValuationService';
-import { prisma } from '../../models';
-
 // Define SkillLevel enum for testing
 enum SkillLevel {
   BASIC = 'BASIC',
@@ -8,22 +5,24 @@ enum SkillLevel {
   ADVANCED = 'ADVANCED'
 }
 
-// Mock Prisma
-jest.mock('../../models', () => ({
-  prisma: {
-    chore: {
-      findUnique: jest.fn(),
-    },
-    completedChore: {
-      findMany: jest.fn(),
-    },
-    user: {
-      findMany: jest.fn(),
-    },
+// Mock Prisma before any imports
+const mockedPrisma = {
+  chore: {
+    findUnique: jest.fn(),
   },
+  completedChore: {
+    findMany: jest.fn(),
+  },
+  user: {
+    findMany: jest.fn(),
+  },
+};
+
+jest.mock('../../models', () => ({
+  prisma: mockedPrisma,
 }));
 
-const mockedPrisma = prisma as jest.Mocked<typeof prisma>;
+import { ChoreValuationService } from '../choreValuationService';
 
 describe('ChoreValuationService', () => {
   beforeEach(() => {
