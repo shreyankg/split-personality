@@ -46,13 +46,26 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Debug route for Railway
+app.get('/debug', (req, res) => {
+  res.json({
+    status: 'server-running',
+    port: PORT,
+    env: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+    headers: req.headers
+  });
+});
+
 // Serve static files in production
 if (isProduction) {
   const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+  console.log('Setting up static file serving from:', frontendDistPath);
   app.use(express.static(frontendDistPath));
   
   // Handle client-side routing - serve index.html for non-API routes
   app.get('*', (req, res) => {
+    console.log('Serving index.html for path:', req.path);
     res.sendFile(path.join(frontendDistPath, 'index.html'));
   });
 }
@@ -61,4 +74,7 @@ app.use(errorHandler);
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Server bound to: 0.0.0.0:${PORT}`);
+  console.log(`Health check available at: http://0.0.0.0:${PORT}/api/health`);
 });
