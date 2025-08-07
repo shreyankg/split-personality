@@ -42,6 +42,11 @@ app.use('/api/chores', choreRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/settlements', settlementRoutes);
 
+// Health checks for Railway
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
@@ -55,6 +60,11 @@ app.get('/debug', (req, res) => {
     timestamp: new Date().toISOString(),
     headers: req.headers
   });
+});
+
+// Simple root route for testing
+app.get('/test', (req, res) => {
+  res.send('<h1>Split Personality - Server is running!</h1><p>API available at /api/health</p>');
 });
 
 // Serve static files in production
