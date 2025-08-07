@@ -8,6 +8,8 @@ console.log('PORT:', PORT);
 const server = http.createServer((req, res) => {
   const timestamp = new Date().toISOString();
   console.log(`${timestamp} - ${req.method} ${req.url}`);
+  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('User-Agent:', req.headers['user-agent']);
 
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
