@@ -1,5 +1,4 @@
-[variables]
-NODE_ENV = "production"
+# Railway sets NODE_ENV=production automatically
 
 [phases.build]
 cmds = [
@@ -10,4 +9,4 @@ cmds = [
 nixPkgs = ["nodejs_18", "npm-9_x"]
 
 [start]
-cmd = "npm run start:production"
+cmd = "npm start"
