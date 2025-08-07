@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
+import fs from 'fs';
 import { errorHandler } from './middleware/errorHandler';
 import { userRoutes } from './routes/userRoutes';
 import { householdRoutes } from './routes/householdRoutes';
@@ -14,6 +15,14 @@ import { settlementRoutes } from './routes/settlementRoutes';
 const app = express();
 const PORT = process.env.PORT || 3001;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Ensure data directory exists for SQLite database in production
+if (isProduction) {
+  const dataDir = '/app/data';
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+}
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
